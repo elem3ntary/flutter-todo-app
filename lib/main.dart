@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:todo_app/create_task.dart';
+
+import 'task_state.dart';
 
 void main() {
   runApp(
@@ -11,37 +14,11 @@ void main() {
   );
 }
 
-class Task {
-  bool done = false;
-  String name;
-  Task(this.name);
-}
-
-class TaskState extends ChangeNotifier {
-  var tasks = <Task>[];
-
-  void addTask(Task task) {
-    tasks.add(task);
-    notifyListeners();
-  }
-
-  void markTaskAsCompleted(Task task) {
-    int selectedTask = tasks.indexOf(task);
-    tasks[selectedTask].done = true;
-    notifyListeners();
-  }
-
-  List<Task> getTasks() {
-    return tasks.where((element) => !element.done).toList();
-  }
-}
-
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<TaskState>();
     var defaultColorScheme = ThemeData.dark().colorScheme;
     var baseTheme = ThemeData.dark();
     var themeData = baseTheme.copyWith(
@@ -50,20 +27,7 @@ class MainApp extends StatelessWidget {
           background: const Color(0xff1B263B),
           secondary: const Color(0xff778DA9)),
     );
-    return MaterialApp(
-      theme: themeData,
-      home: Scaffold(
-        backgroundColor: themeData.colorScheme.background,
-        body: const MainPage(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => state.addTask(Task('test')),
-          child: const IconTheme(
-            data: IconThemeData(color: Colors.white),
-            child: Icon(Icons.add),
-          ),
-        ),
-      ),
-    );
+    return MaterialApp(theme: themeData, home: const MainPage());
   }
 }
 
@@ -76,17 +40,38 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var state = context.watch<TaskState>();
     var tasks = state.getTasks();
-    return Column(
-      children: [
-        const SizedBox(
-          height: 30,
+    var themeData = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: themeData.colorScheme.background,
+      body: Column(
+        children: [
+          const SizedBox(
+            height: 30,
+          ),
+          if (tasks.isEmpty)
+            Expanded(
+                child: Center(
+              child: Text('No tasks. Good work!'),
+            )),
+          if (tasks.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                  itemCount: tasks.length,
+                  itemBuilder: ((context, index) => TodoTile(tasks[index]))),
+            ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => NewTask()));
+        },
+        child: const IconTheme(
+          data: IconThemeData(color: Colors.white),
+          child: Icon(Icons.add),
         ),
-        Expanded(
-          child: ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: ((context, index) => TodoTile(tasks[index]))),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -125,7 +110,7 @@ class TodoTile extends StatelessWidget {
             ),
           ),
           Text(
-            'some title',
+            task.name,
             style: TextStyle(
               fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
             ),
