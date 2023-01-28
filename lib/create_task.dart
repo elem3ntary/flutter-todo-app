@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/task.dart';
 import 'package:todo_app/task_state.dart';
 
 class NewTask extends StatefulWidget {

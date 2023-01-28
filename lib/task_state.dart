@@ -1,13 +1,8 @@
 import 'package:flutter/foundation.dart';
-
-class Task {
-  bool done = false;
-  String name;
-  Task(this.name);
-}
+import 'package:todo_app/task.dart';
 
 class TaskState extends ChangeNotifier {
-  var tasks = <Task>[];
+  var tasks = <Task>[Task('Some cool name', progressTabsCount: 3)];
 
   void addTask(Task task) {
     tasks.add(task);

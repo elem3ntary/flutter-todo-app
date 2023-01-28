@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/create_task.dart';
+import 'package:todo_app/task.dart';
+import 'package:todo_app/zenmode.dart';
 
 import 'task_state.dart';
 
@@ -24,8 +26,8 @@ class MainApp extends StatelessWidget {
     var themeData = baseTheme.copyWith(
       textTheme: GoogleFonts.montserratTextTheme(baseTheme.textTheme),
       colorScheme: defaultColorScheme.copyWith(
-          background: const Color(0xff1B263B),
-          secondary: const Color(0xff778DA9)),
+          background: const Color(0xff304163),
+          secondary: const Color(0xff516C8D)),
     );
     return MaterialApp(theme: themeData, home: const MainPage());
   }
@@ -88,34 +90,43 @@ class TodoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     var state = context.watch<TaskState>();
     var iconData = task.done ? Icons.circle : Icons.circle_outlined;
-    return Container(
-      height: 72,
-      margin: const EdgeInsets.symmetric(vertical: 9, horizontal: 30),
-      decoration: BoxDecoration(
-          border: Border.all(width: 1, color: Colors.white),
-          borderRadius: BorderRadius.circular(10)),
-      child: Row(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 22),
-            child: IconButton(
-              onPressed: () {
-                state.markTaskAsCompleted(task);
-              },
-              icon: Icon(
-                iconData,
-                size: 35,
-                weight: 1,
+    return GestureDetector(
+      onLongPress: () => {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ZenMode(task)))
+      },
+      child: Container(
+        height: 72,
+        margin: const EdgeInsets.symmetric(vertical: 9, horizontal: 30),
+        decoration: BoxDecoration(
+            border: Border.all(width: 1, color: Colors.white),
+            borderRadius: BorderRadius.circular(10)),
+        child: Row(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 22),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  state.markTaskAsCompleted(task);
+                },
+                icon: Center(
+                  child: Icon(
+                    iconData,
+                    size: 35,
+                    weight: 1,
+                  ),
+                ),
               ),
             ),
-          ),
-          Text(
-            task.name,
-            style: TextStyle(
-              fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
+            Text(
+              task.name,
+              style: TextStyle(
+                fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
