@@ -2,7 +2,7 @@ class Task {
   bool done = false;
   String name;
   String? description;
-  late Duration time;
+  Duration time = const Duration(seconds: 0);
   int progressTabsCount;
   late final List<bool> _progress;
   final List<String> _feelings = [];

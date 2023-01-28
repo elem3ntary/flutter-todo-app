@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:todo_app/common_widgets/fixed_width_stopwatch.dart';
 import 'package:todo_app/task.dart';
 import 'package:todo_app/task_state.dart';
 
@@ -261,10 +262,10 @@ class _ZenModeCardState extends State<ZenModeCard> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Text(
-                  timerText,
-                  style: TextStyle(fontSize: 16),
-                ),
+                FixedWidthStopwatch(
+                  duration: widget.widget.task.time,
+                  textStyle: const TextStyle(fontSize: 16),
+                )
               ],
             ),
             const SizedBox(height: 14),
