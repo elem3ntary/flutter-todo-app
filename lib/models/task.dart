@@ -1,5 +1,6 @@
 class Task {
-  bool done = false;
+  int? id;
+  bool completed;
   String name;
   String? description;
   Duration time = const Duration(seconds: 0);
@@ -7,9 +8,15 @@ class Task {
   late final List<bool> _progress;
   final List<String> _feelings = [];
 
-  Task(this.name, {this.description, this.progressTabsCount = 3}) {
+  Task(this.name,
+      {this.description,
+      this.progressTabsCount = 3,
+      this.id,
+      this.completed = false}) {
     _progress = [for (var i = 0; i < progressTabsCount; i++) false];
   }
+
+  bool get persisted => id != null;
 
   List<bool> getProgres() {
     return _progress;
@@ -33,5 +40,14 @@ class Task {
     var seconds = '${time.inSeconds.remainder(60)}'.padLeft(2, '0');
     var minutes = '${time.inMinutes.remainder(60)}'.padLeft(2, '0');
     return '$minutes:$seconds';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'completed': completed
+    };
   }
 }

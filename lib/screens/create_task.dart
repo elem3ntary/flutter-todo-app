@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/task.dart';
-import 'package:todo_app/task_state.dart';
+import 'package:todo_app/models/task.dart';
+import 'package:todo_app/state/task_state.dart';
 
 class NewTask extends StatefulWidget {
   NewTask({super.key});
@@ -61,6 +61,7 @@ class _NewTaskState extends State<NewTask> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
+                autofocus: true,
                 controller: _controller,
                 decoration: InputDecoration(
                     hintText: 'Enter task name',

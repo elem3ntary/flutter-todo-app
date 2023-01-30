@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:todo_app/common_widgets/fixed_width_stopwatch.dart';
-import 'package:todo_app/task.dart';
-import 'package:todo_app/task_state.dart';
+import 'package:todo_app/models/task.dart';
+import 'package:todo_app/state/task_state.dart';
 
 class ZenMode extends StatefulWidget {
   final Task task;
@@ -74,7 +74,15 @@ class _ZenModeState extends State<ZenMode> {
                         availableFeelings: availableFeelings,
                         i: i),
                 ],
-              )
+              ),
+              const SizedBox(height: 40),
+              const Text('Describe your feeling and what to do next?'),
+              const SizedBox(height: 20),
+              const SizedBox(
+                  width: 300,
+                  child: TextField(
+                    decoration: InputDecoration(hintText: 'Enter text'),
+                  ))
             ],
           ),
         ));
