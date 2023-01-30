@@ -4,7 +4,7 @@ import 'package:todo_app/models/task.dart';
 import 'package:todo_app/state/task_state.dart';
 
 class NewTask extends StatefulWidget {
-  NewTask({super.key});
+  const NewTask({super.key});
 
   @override
   State<NewTask> createState() => _NewTaskState();

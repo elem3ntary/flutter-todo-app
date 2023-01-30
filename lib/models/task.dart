@@ -47,7 +47,12 @@ class Task {
       'id': id,
       'name': name,
       'description': description,
-      'completed': completed
+      'completed': completed ? 1 : 0
     };
+  }
+
+  @override
+  String toString() {
+    return 'Task(id: $id, name: $name)';
   }
 }

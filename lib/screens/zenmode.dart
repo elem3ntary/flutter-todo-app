@@ -1,11 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:todo_app/common_widgets/fixed_width_stopwatch.dart';
 import 'package:todo_app/models/task.dart';
-import 'package:todo_app/state/task_state.dart';
 
 class ZenMode extends StatefulWidget {
   final Task task;
@@ -19,14 +16,13 @@ class _ZenModeState extends State<ZenMode> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var cardColor = Color(0xff28385E);
-    var grayColor = Color(0xffD9D9D9);
+    var cardColor = const Color(0xff28385E);
+    var grayColor = const Color(0xffD9D9D9);
     var cardWidth = 314;
     var progressTabsCount = widget.task.progressTabsCount;
     var taskProgress = widget.task.getProgres();
-    var taskFeelings = widget.task.getFeelings();
+    // var taskFeelings = widget.task.getFeelings();
     var availableFeelings = ['😳', '😖', '😀'];
-    print('Task progress $taskProgress');
 
     return Scaffold(
         backgroundColor: theme.colorScheme.background,
@@ -61,10 +57,10 @@ class _ZenModeState extends State<ZenMode> {
                     ),
                 ],
               ),
-              SizedBox(height: 93),
-              Text('How do you feel about the task?',
+              const SizedBox(height: 93),
+              const Text('How do you feel about the task?',
                   style: TextStyle(fontSize: 15)),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -90,7 +86,7 @@ class _ZenModeState extends State<ZenMode> {
 }
 
 class FeelingCard extends StatefulWidget {
-  FeelingCard({
+  const FeelingCard({
     super.key,
     required this.theme,
     required this.availableFeelings,
@@ -130,7 +126,7 @@ class _FeelingCardState extends State<FeelingCard> {
         child: Center(
             child: Text(
           widget.availableFeelings[widget.i],
-          style: TextStyle(fontSize: 32),
+          style: const TextStyle(fontSize: 32),
         )),
       ),
     );

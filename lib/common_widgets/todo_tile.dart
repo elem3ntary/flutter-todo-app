@@ -9,9 +9,11 @@ class TodoTile extends StatelessWidget {
   const TodoTile(
     this.task, {
     super.key,
+    required this.onCompleted,
   });
 
   final Task task;
+  final Function onCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +31,24 @@ class TodoTile extends StatelessWidget {
             border: Border.all(width: 1, color: Colors.white),
             borderRadius: BorderRadius.circular(10)),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              task.name,
-              style: TextStyle(
-                fontSize: Theme.of(context).textTheme.titleLarge!.fontSize,
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(
+                task.name,
+                style: TextStyle(
+                  fontSize: Theme.of(context).textTheme.titleLarge!.fontSize,
+                ),
               ),
             ),
             Container(
-              // margin: const EdgeInsets.symmetric(horizontal: 22),
+              margin: const EdgeInsets.symmetric(horizontal: 22),
               child: IconButton(
                 padding: EdgeInsets.zero,
                 onPressed: () {
                   state.markTaskAsCompleted(task);
+                  onCompleted();
                 },
                 icon: Center(
                   child: Icon(
