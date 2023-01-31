@@ -6,50 +6,50 @@ import 'package:todo_app/models/task.dart';
 import 'dart:developer' as dev;
 
 class AppDatabase {
-  static Database? _instance;
+  static Database? _database;
   static const dbFileName = 'TODO_APP.db';
   static const tableName = 'tasks';
-  static const createTableQuery =
-      'CREATE TABLE ${AppDatabase.tableName}(id INTEGER PRIMARY KEY, name TEXT, description TEXT, completed INTEGER)';
+  static const createTableQuery = 'CREATE TABLE $tableName('
+      'id INTEGER PRIMARY KEY,'
+      'name TEXT,'
+      'description TEXT,'
+      'completed INTEGER,'
+      'ancestorTaskId INTEGER,'
+      'FOREIGN KEY (ancestorTaskId) REFERENCES $tableName(id))';
 
-  static Future<Database> getDb() async {
-    if (AppDatabase._instance != null) {
-      return AppDatabase._instance!;
+  Future<Database> getDb() async {
+    if (AppDatabase._database != null) {
+      return AppDatabase._database!;
     }
 
-    _instance = await _initDb();
-    return _instance!;
+    _database = await _initDb();
+    return _database!;
   }
 
-  static Future<Database> _initDb() async {
+  Future<Database> _initDb() async {
     return openDatabase(join(await getDatabasesPath(), AppDatabase.dbFileName),
-        onCreate: ((db, version) => db.execute(AppDatabase.createTableQuery)),
-        version: 1);
+        onCreate: _onCreate, onConfigure: _onConfigure, version: 1);
   }
 
-  static Future<void> insertTask(Task task) async {
+  void _onCreate(db, version) => db.execute(AppDatabase.createTableQuery);
+  void _onConfigure(Database db) => db.execute('PRAGMA foreign_keys = ON;');
+
+  Future<void> insertTask(Task task) async {
     final db = await getDb();
     final id = await db.insert(tableName, task.toMap());
     task.id = id;
   }
 
-  static Future<void> updateTask(Task task) async {
-    final db = await AppDatabase.getDb();
+  Future<void> updateTask(Task task) async {
+    final db = await getDb();
     db.update(AppDatabase.tableName, task.toMap(),
         where: 'id=?', whereArgs: [task.id!]);
   }
 
-  static Future<List<Task>> tasks() async {
-    final db = await AppDatabase.getDb();
+  Future<List<Task>> tasks() async {
+    final db = await getDb();
     List<Map<String, dynamic>> tasks = await db.query(tableName);
     dev.log('Fetched ${tasks.length} task(s) from the DB');
-    return List.generate(
-        tasks.length,
-        (index) => Task(
-              tasks[index]['name'],
-              description: tasks[index]['description'],
-              id: tasks[index]['id'],
-              completed: tasks[index]['completed'] == 1,
-            ));
+    return List.generate(tasks.length, (index) => Task.fromMap(tasks[index]));
   }
 }

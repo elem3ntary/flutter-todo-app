@@ -3,6 +3,8 @@ class Task {
   bool completed;
   String name;
   String? description;
+  int? ancestorTaskId;
+
   Duration time = const Duration(seconds: 0);
   int progressTabsCount;
   late final List<bool> _progress;
@@ -12,7 +14,8 @@ class Task {
       {this.description,
       this.progressTabsCount = 3,
       this.id,
-      this.completed = false}) {
+      this.completed = false,
+      this.ancestorTaskId}) {
     _progress = [for (var i = 0; i < progressTabsCount; i++) false];
   }
 
@@ -47,8 +50,17 @@ class Task {
       'id': id,
       'name': name,
       'description': description,
-      'completed': completed ? 1 : 0
+      'completed': completed ? 1 : 0,
+      'ancestorTaskId': ancestorTaskId
     };
+  }
+
+  static Task fromMap(Map<String, dynamic> map) {
+    return Task(map['name'],
+        description: map['description'],
+        id: map['id'],
+        completed: map['completed'] == 1,
+        ancestorTaskId: map['ancestorTaskId']);
   }
 
   @override
