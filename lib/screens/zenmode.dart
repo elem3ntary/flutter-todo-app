@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:todo_app/common_widgets/feeling_card.dart';
 import 'package:todo_app/common_widgets/fixed_width_stopwatch.dart';
+import 'package:todo_app/common_widgets/single_progress_bar.dart';
 import 'package:todo_app/models/task.dart';
 
 class ZenMode extends StatefulWidget {
@@ -17,11 +19,10 @@ class _ZenModeState extends State<ZenMode> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var cardColor = const Color(0xff28385E);
-    var grayColor = const Color(0xffD9D9D9);
+
     var cardWidth = 314;
     var progressTabsCount = widget.task.progressTabsCount;
     var taskProgress = widget.task.getProgres();
-    // var taskFeelings = widget.task.getFeelings();
     var availableFeelings = ['😳', '😖', '😀'];
 
     return Scaffold(
@@ -38,25 +39,6 @@ class _ZenModeState extends State<ZenMode> {
               const SizedBox(height: 125),
               ZenModeCard(cardColor: cardColor, widget: widget),
               const SizedBox(height: 14),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (var i = 0; i < progressTabsCount; i++)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          widget.task.setProgressUpTo(i);
-                        });
-                      },
-                      child: SingleProgressBar(
-                          cardWidth: cardWidth,
-                          progressTabsCount: progressTabsCount,
-                          i: i,
-                          grayColor: grayColor,
-                          taskProgress: taskProgress),
-                    ),
-                ],
-              ),
               const SizedBox(height: 93),
               const Text('How do you feel about the task?',
                   style: TextStyle(fontSize: 15)),
@@ -64,11 +46,10 @@ class _ZenModeState extends State<ZenMode> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  for (var i = 0; i < availableFeelings.length; i++)
+                  for (var feeling in availableFeelings)
                     FeelingCard(
-                        theme: theme,
-                        availableFeelings: availableFeelings,
-                        i: i),
+                      feeling: feeling,
+                    ),
                 ],
               ),
               const SizedBox(height: 40),
@@ -82,84 +63,6 @@ class _ZenModeState extends State<ZenMode> {
             ],
           ),
         ));
-  }
-}
-
-class FeelingCard extends StatefulWidget {
-  const FeelingCard({
-    super.key,
-    required this.theme,
-    required this.availableFeelings,
-    required this.i,
-  });
-
-  static const selectedColor = Color(0xff598D51);
-
-  final ThemeData theme;
-  final List<String> availableFeelings;
-  final int i;
-
-  @override
-  State<FeelingCard> createState() => _FeelingCardState();
-}
-
-class _FeelingCardState extends State<FeelingCard> {
-  bool selected = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selected = !selected;
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.all(11),
-        width: 80,
-        height: 50,
-        decoration: BoxDecoration(
-            color: selected
-                ? FeelingCard.selectedColor
-                : widget.theme.colorScheme.secondary,
-            borderRadius: BorderRadius.circular(40)),
-        child: Center(
-            child: Text(
-          widget.availableFeelings[widget.i],
-          style: const TextStyle(fontSize: 32),
-        )),
-      ),
-    );
-  }
-}
-
-class SingleProgressBar extends StatelessWidget {
-  const SingleProgressBar({
-    super.key,
-    required this.cardWidth,
-    required this.progressTabsCount,
-    required this.i,
-    required this.grayColor,
-    required this.taskProgress,
-  });
-
-  final int cardWidth;
-  final int progressTabsCount;
-  final int i;
-  final Color grayColor;
-  final List<bool> taskProgress;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: cardWidth / progressTabsCount - 4,
-      height: 15,
-      margin: EdgeInsets.only(right: i < progressTabsCount - 1 ? 8 : 0),
-      decoration: BoxDecoration(
-          border: Border.all(color: grayColor, width: 2),
-          borderRadius: BorderRadius.circular(20),
-          color: taskProgress[i] ? grayColor : Colors.transparent),
-    );
   }
 }
 
@@ -272,11 +175,11 @@ class _ZenModeCardState extends State<ZenModeCard> {
                 )
               ],
             ),
-            const SizedBox(height: 14),
-            const Text(
-              'Short description of the task',
-              style: TextStyle(fontSize: 16),
-            )
+            const SizedBox(height: 40),
+            const SingleProgressBar(
+              cardWidth: 200,
+              isCompleted: false,
+            ),
           ]),
         ),
       ),
