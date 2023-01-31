@@ -16,12 +16,16 @@ class TaskState extends ChangeNotifier {
   }
 
   void markTaskAsCompleted(Task task) {
-    int selectedTask = tasks!.indexOf(task);
-    tasks![selectedTask].completed = true;
+    task.completed = true;
     database.updateTask(task);
 
-    // rebuild AnimationList, thus can display another view if list is empty
-    if (tasks!.where((element) => !element.completed).toList().isEmpty) {
+    notifyListeners();
+    // causes task list widget to rebuild thus AnimationList is replaced by
+    // widget that notifies that all tasks are completed
+    if (tasks!
+        .where((el) => !el.completed && el.ancestorTaskId == null)
+        .toList()
+        .isEmpty) {
       notifyListeners();
     }
   }
@@ -30,5 +34,9 @@ class TaskState extends ChangeNotifier {
     // ignore: prefer_conditional_assignment
     tasks ??= await database.tasks();
     return tasks!;
+  }
+
+  Future<void> fetchSubtasks(Task task) async {
+    task.subtasks = await database.fetchSutasks(task);
   }
 }

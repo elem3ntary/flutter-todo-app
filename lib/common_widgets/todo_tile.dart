@@ -10,19 +10,24 @@ class TodoTile extends StatelessWidget {
     this.task, {
     super.key,
     required this.onCompleted,
+    this.tappable = true,
   });
 
   final Task task;
   final Function onCompleted;
+  final bool tappable;
 
   @override
   Widget build(BuildContext context) {
     var state = context.watch<TaskState>();
     var iconData = task.completed ? Icons.circle : Icons.circle_outlined;
     return GestureDetector(
-      onTap: () => {
+      onTap: () {
+        if (!tappable) {
+          return;
+        }
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ZenMode(task)))
+            context, MaterialPageRoute(builder: (context) => ZenMode(task)));
       },
       child: Container(
         height: 72,

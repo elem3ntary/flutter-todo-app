@@ -47,14 +47,26 @@ class AppDatabase {
 
   Future<void> updateTask(Task task) async {
     final db = await getDb();
+    dev.log('Updating task with id ${task.id}');
     db.update(AppDatabase.tableName, task.toMap(),
         where: 'id=?', whereArgs: [task.id!]);
   }
 
+  Future<List<Task>> fetchSutasks(Task task) async {
+    final db = await getDb();
+    final List<Map<String, dynamic>> tasks = await db
+        .query(tableName, where: 'ancestorTaskId=?', whereArgs: [task.id]);
+    return databaseResultToTaskList(tasks);
+  }
+
   Future<List<Task>> tasks() async {
     final db = await getDb();
-    List<Map<String, dynamic>> tasks = await db.query(tableName);
+    final List<Map<String, dynamic>> tasks = await db.query(tableName);
     dev.log('Fetched ${tasks.length} task(s) from the DB');
+    return databaseResultToTaskList(tasks);
+  }
+
+  List<Task> databaseResultToTaskList(List<Map<String, dynamic>> tasks) {
     return List.generate(tasks.length, (index) => Task.fromMap(tasks[index]));
   }
 }

@@ -34,7 +34,9 @@ class MainPage extends StatelessWidget {
   }
 
   List<Task> filterTaskToDisplay(List<Task> tasks) {
-    return tasks.where((task) => !task.completed).toList();
+    return tasks
+        .where((task) => !task.completed && task.ancestorTaskId == null)
+        .toList();
   }
 
   @override

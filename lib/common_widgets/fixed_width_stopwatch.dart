@@ -16,7 +16,7 @@ class FixedWidthStopwatch extends StatefulWidget {
 
 class _FixedWidthStopwatchState extends State<FixedWidthStopwatch> {
   final _taskStopWatch = Stopwatch();
-  late final Duration _duration;
+  late Duration _duration;
   late Timer _taskTimer;
 
   void _startTaskTimer() {

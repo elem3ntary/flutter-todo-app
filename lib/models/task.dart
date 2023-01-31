@@ -6,39 +6,23 @@ class Task {
   int? ancestorTaskId;
   int? subtaskIndex;
 
+  List<Task>? subtasks;
+
   Duration time = const Duration(seconds: 0);
-  int progressTabsCount;
-  late final List<bool> _progress;
   final List<String> _feelings = [];
+  final availableFeelings = ['😳', '😖', '😀'];
 
   Task(this.name,
       {this.description,
-      this.progressTabsCount = 3,
       this.id,
       this.completed = false,
       this.ancestorTaskId,
-      this.subtaskIndex}) {
-    _progress = [for (var i = 0; i < progressTabsCount; i++) false];
-  }
+      this.subtaskIndex});
 
   bool get persisted => id != null;
 
-  List<bool> getProgres() {
-    return _progress;
-  }
-
   List<String> getFeelings() {
     return _feelings;
-  }
-
-  void setProgressUpTo(int index) {
-    for (var i = 0; i < progressTabsCount; i++) {
-      if (i <= index) {
-        _progress[i] = true;
-      } else {
-        _progress[i] = false;
-      }
-    }
   }
 
   String getReadableTime() {
