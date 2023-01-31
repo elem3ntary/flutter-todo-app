@@ -16,12 +16,13 @@ class _NewTaskState extends State<NewTask> {
   final _controller = TextEditingController();
   final subtaskControllerList = <TextEditingController>[];
   final GlobalKey<AnimatedListState> listState = GlobalKey();
+  final FocusNode _nameFocusNode = FocusNode();
 
   bool _valid = true;
 
   @override
   void initState() {
-    _controller.addListener(_checkIfNameIsValid);
+    _nameFocusNode.addListener(_checkIfNameIsValid);
     subtaskControllerList.add(TextEditingController());
     super.initState();
   }
@@ -29,10 +30,14 @@ class _NewTaskState extends State<NewTask> {
   @override
   void dispose() {
     _controller.dispose();
+    _nameFocusNode.dispose();
     super.dispose();
   }
 
   void _checkIfNameIsValid() {
+    if (_nameFocusNode.hasFocus) {
+      return;
+    }
     setState(() {
       _valid = _controller.text.isNotEmpty;
     });
@@ -101,6 +106,7 @@ class _NewTaskState extends State<NewTask> {
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 autofocus: true,
+                focusNode: _nameFocusNode,
                 controller: _controller,
                 decoration: InputDecoration(
                     hintText: 'Enter task name',
