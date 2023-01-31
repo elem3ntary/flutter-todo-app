@@ -1,17 +1,55 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class FixedWidthStopwatch extends StatelessWidget {
+class FixedWidthStopwatch extends StatefulWidget {
   const FixedWidthStopwatch(
-      {super.key, required this.duration, this.textStyle});
+      {super.key, this.initialDuration = Duration.zero, this.textStyle});
 
-  final Duration duration;
+  final Duration initialDuration;
   final TextStyle? textStyle;
+
+  @override
+  State<FixedWidthStopwatch> createState() => _FixedWidthStopwatchState();
+}
+
+class _FixedWidthStopwatchState extends State<FixedWidthStopwatch> {
+  final _taskStopWatch = Stopwatch();
+  late final Duration _duration;
+  late Timer _taskTimer;
+
+  void _startTaskTimer() {
+    _taskStopWatch.reset();
+    _taskStopWatch.start();
+    _taskTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _duration = _taskStopWatch.elapsed;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    _duration = widget.initialDuration;
+    _startTaskTimer();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _endTaskTimer();
+    super.dispose();
+  }
+
+  void _endTaskTimer() {
+    _taskStopWatch.stop();
+    _taskTimer.cancel();
+  }
 
   double _getTextWidth(String text, BuildContext context) {
     final Size size = (TextPainter(
-            text: TextSpan(text: text, style: textStyle),
+            text: TextSpan(text: text, style: widget.textStyle),
             maxLines: 1,
             textScaleFactor: MediaQuery.of(context).textScaleFactor,
             textDirection: TextDirection.ltr)
@@ -35,22 +73,23 @@ class FixedWidthStopwatch extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         FixedSizeText(
-            (duration.inMinutes / 10).floor().toString(), maxLetterLength,
-            textStyle: textStyle),
+            (_duration.inMinutes / 10).floor().toString(), maxLetterLength,
+            textStyle: widget.textStyle),
         FixedSizeText(
-            duration.inMinutes.remainder(10).toString(), maxLetterLength,
-            textStyle: textStyle),
+            _duration.inMinutes.remainder(10).toString(), maxLetterLength,
+            textStyle: widget.textStyle),
         Text(
           ':',
-          style: textStyle,
+          style: widget.textStyle,
         ),
         FixedSizeText(
-            (duration.inSeconds.remainder(60) / 10).floor().toString(),
+            (_duration.inSeconds.remainder(60) / 10).floor().toString(),
             maxLetterLength,
-            textStyle: textStyle),
-        FixedSizeText(duration.inSeconds.remainder(60).remainder(10).toString(),
+            textStyle: widget.textStyle),
+        FixedSizeText(
+            _duration.inSeconds.remainder(60).remainder(10).toString(),
             maxLetterLength,
-            textStyle: textStyle),
+            textStyle: widget.textStyle),
       ],
     );
   }

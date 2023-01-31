@@ -37,7 +37,7 @@ class _ZenModeState extends State<ZenMode> {
                     const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 125),
-              ZenModeCard(cardColor: cardColor, widget: widget),
+              ZenModeCard(cardColor: cardColor, task: widget.task),
               const SizedBox(height: 14),
               const SizedBox(height: 93),
               const Text('How do you feel about the task?',
@@ -70,30 +70,28 @@ class ZenModeCard extends StatefulWidget {
   const ZenModeCard({
     super.key,
     required this.cardColor,
-    required this.widget,
+    required this.task,
   });
 
   final Color cardColor;
-  final ZenMode widget;
+  final Task task;
 
   @override
   State<ZenModeCard> createState() => _ZenModeCardState();
 }
 
 class _ZenModeCardState extends State<ZenModeCard> {
-  late Timer _timer;
-  final _taskStopWatch = Stopwatch();
-  late Timer _taskTimer;
-  String timerText = '00:00';
+  late Timer _animationDurationTimer;
   late Timer _animationUpdateTimer;
+
   double borderWidth = 0;
   Color borderColor = const Color.fromARGB(0, 255, 230, 0);
 
-  void startTimer() {
+  void startAnimationDurationTimer() {
     startAnimationTimer();
-    _timer = Timer(const Duration(seconds: 1, milliseconds: 400), () {
+    _animationDurationTimer =
+        Timer(const Duration(seconds: 1, milliseconds: 400), () {
       resetAnimationTimer();
-      endTaskTimer();
       Navigator.pop(context);
     });
   }
@@ -114,36 +112,14 @@ class _ZenModeCardState extends State<ZenModeCard> {
     });
   }
 
-  void startTaskTimer() {
-    _taskStopWatch.reset();
-    _taskStopWatch.start();
-    _taskTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        widget.widget.task.time = _taskStopWatch.elapsed;
-        timerText = widget.widget.task.getReadableTime();
-      });
-    });
-  }
-
-  void endTaskTimer() {
-    _taskStopWatch.stop();
-    _taskTimer.cancel();
-  }
-
-  @override
-  void initState() {
-    startTaskTimer();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) {
-        startTimer();
+        startAnimationDurationTimer();
       },
       onTapUp: (_) {
-        _timer.cancel();
+        _animationDurationTimer.cancel();
         resetAnimationTimer();
       },
       child: AnimatedContainer(
@@ -163,21 +139,21 @@ class _ZenModeCardState extends State<ZenModeCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.widget.task.name,
+                  widget.task.name,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 FixedWidthStopwatch(
-                  duration: widget.widget.task.time,
+                  initialDuration: widget.task.time,
                   textStyle: const TextStyle(fontSize: 16),
                 )
               ],
             ),
             const SizedBox(height: 40),
             const SingleProgressBar(
-              cardWidth: 200,
+              cardWidth: 314,
               isCompleted: false,
             ),
           ]),
