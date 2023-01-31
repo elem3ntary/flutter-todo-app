@@ -14,8 +14,10 @@ class AppDatabase {
       'name TEXT,'
       'description TEXT,'
       'completed INTEGER,'
+      'subtaskIndex INTEGER,' // defines order of subtasks, NULL if ancestorTaskID is null
       'ancestorTaskId INTEGER,'
       'FOREIGN KEY (ancestorTaskId) REFERENCES $tableName(id))';
+  static const databaseVersion = 2;
 
   Future<Database> getDb() async {
     if (AppDatabase._database != null) {
@@ -27,17 +29,20 @@ class AppDatabase {
   }
 
   Future<Database> _initDb() async {
-    return openDatabase(join(await getDatabasesPath(), AppDatabase.dbFileName),
-        onCreate: _onCreate, onConfigure: _onConfigure, version: 1);
+    return openDatabase(join(await getDatabasesPath(), dbFileName),
+        onCreate: _onCreate,
+        onConfigure: _onConfigure,
+        version: databaseVersion);
   }
 
   void _onCreate(db, version) => db.execute(AppDatabase.createTableQuery);
   void _onConfigure(Database db) => db.execute('PRAGMA foreign_keys = ON;');
 
-  Future<void> insertTask(Task task) async {
+  Future<int> insertTask(Task task) async {
     final db = await getDb();
     final id = await db.insert(tableName, task.toMap());
     task.id = id;
+    return id;
   }
 
   Future<void> updateTask(Task task) async {

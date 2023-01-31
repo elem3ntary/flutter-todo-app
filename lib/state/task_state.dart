@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/persistance.dart';
@@ -6,10 +8,11 @@ class TaskState extends ChangeNotifier {
   List<Task>? tasks;
   AppDatabase database = AppDatabase();
 
-  Future<void> addTask(Task task) async {
+  Future<int> addTask(Task task) async {
     tasks!.add(task);
-    database.insertTask(task);
+    int taskId = await database.insertTask(task);
     notifyListeners();
+    return taskId;
   }
 
   void markTaskAsCompleted(Task task) {

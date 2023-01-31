@@ -33,6 +33,10 @@ class MainPage extends StatelessWidget {
     );
   }
 
+  List<Task> filterTaskToDisplay(List<Task> tasks) {
+    return tasks.where((task) => !task.completed).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     var state = context.watch<TaskState>();
@@ -47,8 +51,7 @@ class MainPage extends StatelessWidget {
               return const CircularProgressIndicator();
             }
 
-            final List<Task> tasks =
-                snapshot.data!.where((element) => !element.completed).toList();
+            final List<Task> tasks = filterTaskToDisplay(snapshot.data!);
             dev.log(
                 'Total of ${tasks.length} task(s) is to be loaded in the task list');
             if (tasks.isEmpty) {

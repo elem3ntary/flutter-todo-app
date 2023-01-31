@@ -58,6 +58,20 @@ class _NewTaskState extends State<NewTask> {
             controller: TextEditingController(text: 'test test')));
   }
 
+  Future<void> addTask(TaskState state) async {
+    final task = Task(_controller.text);
+    final taskId = await state.addTask(task);
+    for (var i = 0; i < subtaskControllerList.length; i++) {
+      final subtaskController = subtaskControllerList[i];
+      if (subtaskController.text.trim().isEmpty) {
+        continue;
+      }
+      final subTask =
+          Task(subtaskController.text, ancestorTaskId: taskId, subtaskIndex: i);
+      await state.addTask(subTask);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var state = context.watch<TaskState>();
@@ -110,9 +124,7 @@ class _NewTaskState extends State<NewTask> {
           if (!_valid) {
             return;
           }
-          state.addTask(Task(
-            _controller.text,
-          ));
+          addTask(state);
           Navigator.pop(context);
         },
         child: const Icon(Icons.check),

@@ -4,6 +4,7 @@ class Task {
   String name;
   String? description;
   int? ancestorTaskId;
+  int? subtaskIndex;
 
   Duration time = const Duration(seconds: 0);
   int progressTabsCount;
@@ -15,7 +16,8 @@ class Task {
       this.progressTabsCount = 3,
       this.id,
       this.completed = false,
-      this.ancestorTaskId}) {
+      this.ancestorTaskId,
+      this.subtaskIndex}) {
     _progress = [for (var i = 0; i < progressTabsCount; i++) false];
   }
 
@@ -51,7 +53,8 @@ class Task {
       'name': name,
       'description': description,
       'completed': completed ? 1 : 0,
-      'ancestorTaskId': ancestorTaskId
+      'ancestorTaskId': ancestorTaskId,
+      'subtaskIndex': subtaskIndex
     };
   }
 
@@ -60,7 +63,8 @@ class Task {
         description: map['description'],
         id: map['id'],
         completed: map['completed'] == 1,
-        ancestorTaskId: map['ancestorTaskId']);
+        ancestorTaskId: map['ancestorTaskId'],
+        subtaskIndex: map['subtaskIndex']);
   }
 
   @override
