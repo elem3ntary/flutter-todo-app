@@ -1,9 +1,9 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/state/task_state.dart';
-import 'dart:developer' as dev;
 
 class NewTask extends StatefulWidget {
   const NewTask({super.key});
@@ -64,6 +64,12 @@ class _NewTaskState extends State<NewTask> {
   }
 
   Future<void> addTask(TaskState state) async {
+    if (_controller.text.trim().isEmpty) {
+      setState(() {
+        _valid = false;
+      });
+      return;
+    }
     final task = Task(_controller.text);
     final taskId = await state.addTask(task);
     for (var i = 0; i < subtaskControllerList.length; i++) {
@@ -127,6 +133,9 @@ class _NewTaskState extends State<NewTask> {
       floatingActionButton: FloatingActionButton.large(
         onPressed: () {
           _checkIfNameIsValid();
+          setState(() {
+            _valid = _controller.text.trim().isNotEmpty;
+          });
           if (!_valid) {
             return;
           }
