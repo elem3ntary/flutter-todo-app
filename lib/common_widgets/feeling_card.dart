@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 class FeelingCard extends StatefulWidget {
-  const FeelingCard({super.key, required this.feeling});
+  const FeelingCard(
+      {super.key, required this.feeling, required this.onSelectedChanged});
 
   static const selectedColor = Color(0xff598D51);
   final String feeling;
+  final void Function(bool selected) onSelectedChanged;
 
   @override
   State<FeelingCard> createState() => _FeelingCardState();
@@ -13,14 +15,17 @@ class FeelingCard extends StatefulWidget {
 class _FeelingCardState extends State<FeelingCard> {
   bool selected = false;
 
+  void toggleSelected() {
+    selected = !selected;
+    widget.onSelectedChanged(selected);
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selected = !selected;
-        });
+        setState(toggleSelected);
       },
       child: Container(
         margin: const EdgeInsets.all(11),

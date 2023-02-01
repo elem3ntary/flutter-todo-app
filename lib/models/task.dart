@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 class Task {
   int? id;
   bool completed;
@@ -9,7 +11,7 @@ class Task {
   List<Task>? subtasks;
 
   Duration time = const Duration(seconds: 0);
-  final List<String> _feelings = [];
+  String feeling;
   final availableFeelings = ['😳', '😖', '😀'];
 
   Task(this.name,
@@ -17,12 +19,21 @@ class Task {
       this.id,
       this.completed = false,
       this.ancestorTaskId,
-      this.subtaskIndex});
+      this.subtaskIndex,
+      this.feeling = ''});
 
   bool get persisted => id != null;
 
-  List<String> getFeelings() {
-    return _feelings;
+  String getLastFeeling() {
+    return feeling;
+  }
+
+  int getFeelingCount() {
+    return 1;
+  }
+
+  void addFeeling(String feeling) {
+    this.feeling = feeling;
   }
 
   String getReadableTime() {
@@ -38,7 +49,8 @@ class Task {
       'description': description,
       'completed': completed ? 1 : 0,
       'ancestorTaskId': ancestorTaskId,
-      'subtaskIndex': subtaskIndex
+      'subtaskIndex': subtaskIndex,
+      'feeling': feeling
     };
   }
 
@@ -48,7 +60,8 @@ class Task {
         id: map['id'],
         completed: map['completed'] == 1,
         ancestorTaskId: map['ancestorTaskId'],
-        subtaskIndex: map['subtaskIndex']);
+        subtaskIndex: map['subtaskIndex'],
+        feeling: map['feeling'] ?? '');
   }
 
   @override

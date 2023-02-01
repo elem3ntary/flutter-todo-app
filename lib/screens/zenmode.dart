@@ -1,5 +1,8 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common_widgets/feeling_card.dart';
@@ -8,7 +11,6 @@ import 'package:todo_app/common_widgets/single_progress_bar.dart';
 import 'package:todo_app/common_widgets/todo_tile.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/state/task_state.dart';
-import 'package:collection/collection.dart';
 
 class ZenMode extends StatefulWidget {
   final Task task;
@@ -27,6 +29,7 @@ class _ZenModeState extends State<ZenMode> {
 
     return Scaffold(
         backgroundColor: theme.colorScheme.background,
+        resizeToAvoidBottomInset: true,
         body: FutureBuilder(
           // TODO: bugs with Future builder are present.
           // when deleting item how to update internal data structure
@@ -38,44 +41,109 @@ class _ZenModeState extends State<ZenMode> {
               );
             }
             return Center(
-              child: Column(
-                children: [
-                  const SizedBox(height: 132),
-                  Text(
-                    'Zen mode'.toUpperCase(),
-                    style: const TextStyle(
-                        fontSize: 32, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 125),
-                  ZenModeCard(cardColor: cardColor, task: widget.task),
-                  const SizedBox(height: 30),
-                  SubTaskTodoTile(task: widget.task),
-                  const SizedBox(height: 40),
-                  const Text('How do you feel about the task?',
-                      style: TextStyle(fontSize: 15)),
-                  const SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (var feeling in widget.task.availableFeelings)
-                        FeelingCard(
-                          feeling: feeling,
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  const Text('Describe your feeling and what to do next?'),
-                  const SizedBox(height: 20),
-                  const SizedBox(
-                      width: 300,
-                      child: TextField(
-                        decoration: InputDecoration(hintText: 'Enter text'),
-                      ))
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // const SizedBox(height: 132),
+                    Text(
+                      'Zen mode'.toUpperCase(),
+                      style: const TextStyle(
+                          fontSize: 32, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 30),
+                    ZenModeCard(cardColor: cardColor, task: widget.task),
+                    const SizedBox(height: 30),
+                    SubTaskTodoTile(task: widget.task),
+                    const SizedBox(height: 40),
+                    FeelingInput(
+                      task: widget.task,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Last feeling'),
+                    const SizedBox(height: 20),
+                    if (widget.task.getFeelingCount() > 0)
+                      Text(
+                        widget.task.getLastFeeling(),
+                        style: const TextStyle(fontSize: 24),
+                      )
+                    else
+                      const Text('Nothing yet'),
+                  ],
+                ),
               ),
             );
           },
         ));
+  }
+}
+
+class FeelingInput extends StatefulWidget {
+  const FeelingInput({
+    super.key,
+    required this.task,
+  });
+
+  final Task task;
+
+  @override
+  State<FeelingInput> createState() => _FeelingInputState();
+}
+
+class _FeelingInputState extends State<FeelingInput> {
+  final selectedFeelings = <String>[];
+
+  final _textEditingController = TextEditingController();
+
+  void _onSelectedChanged(bool value, String feeling) {
+    if (value) {
+      selectedFeelings.add(feeling);
+    } else {
+      selectedFeelings.remove(feeling);
+    }
+  }
+
+  void _onTextFiledSubmitted(String value, TaskState state) {
+    if (value.trim().isEmpty) {
+      return;
+    }
+    final feeling = selectedFeelings.join(' ');
+    state.addFeeling('$feeling $value', widget.task);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<TaskState>();
+    return Column(
+      children: [
+        const Text('How do you feel about the task?',
+            style: TextStyle(fontSize: 15)),
+        const SizedBox(height: 15),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (var feeling in widget.task.availableFeelings)
+              FeelingCard(
+                feeling: feeling,
+                onSelectedChanged: (value) =>
+                    _onSelectedChanged(value, feeling),
+              ),
+          ],
+        ),
+        const SizedBox(height: 40),
+        const Text('Describe your feeling and what to do next?'),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: 300,
+          child: TextField(
+            controller: _textEditingController,
+            decoration: const InputDecoration(
+              hintText: 'Enter text',
+            ),
+            onSubmitted: (value) => _onTextFiledSubmitted(value, state),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -110,7 +178,8 @@ class _SubTaskTodoTileState extends State<SubTaskTodoTile> {
   @override
   Widget build(BuildContext context) {
     if (subtask == null) {
-      return const Text('All subtasks completed!');
+      return const SizedBox(
+          height: 72, child: Center(child: Text('All subtasks completed!')));
     }
 
     return SizedBox(
@@ -171,12 +240,12 @@ class _ZenModeCardState extends State<ZenModeCard> {
 
   double getProgressBarWidth(double totalWidth, int barsCount,
       {double padding = 8}) {
+    // TODO: size overflows
     return totalWidth / barsCount - padding;
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<TaskState>();
     final subtasks = widget.task.subtasks;
     final progressBarWidth = getProgressBarWidth(308, subtasks!.length);
     return GestureDetector(
@@ -219,11 +288,12 @@ class _ZenModeCardState extends State<ZenModeCard> {
             const SizedBox(height: 40),
             Row(
               children: [
-                for (var i = 0; i < widget.task.subtasks!.length; i++)
-                  SingleProgressBar(
-                    cardWidth: progressBarWidth,
-                    isCompleted: widget.task.subtasks![i].completed,
-                  ),
+                if (widget.task.subtasks!.length > 1)
+                  for (var i = 0; i < widget.task.subtasks!.length; i++)
+                    SingleProgressBar(
+                      cardWidth: progressBarWidth,
+                      isCompleted: widget.task.subtasks![i].completed,
+                    ),
               ],
             )
           ]),

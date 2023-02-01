@@ -1,9 +1,11 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:async';
+import 'dart:developer' as dev;
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo_app/models/task.dart';
-import 'dart:developer' as dev;
 
 class AppDatabase {
   static Database? _database;
@@ -16,6 +18,7 @@ class AppDatabase {
       'completed INTEGER,'
       'subtaskIndex INTEGER,' // defines order of subtasks, NULL if ancestorTaskID is null
       'ancestorTaskId INTEGER,'
+      'feeling TEXT,'
       'FOREIGN KEY (ancestorTaskId) REFERENCES $tableName(id))';
   static const databaseVersion = 2;
 
