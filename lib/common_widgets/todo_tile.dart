@@ -17,10 +17,22 @@ class TodoTile extends StatelessWidget {
   final Function onCompleted;
   final bool tappable;
 
+  Widget _buildTaskTitle({required double fontSize}) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: Text(
+        task.name,
+        style: TextStyle(fontSize: fontSize),
+        softWrap: true,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var state = context.watch<TaskState>();
     var iconData = task.completed ? Icons.circle : Icons.circle_outlined;
+    final titleFontSize = Theme.of(context).textTheme.titleLarge!.fontSize!;
     return GestureDetector(
       onTap: () {
         if (!tappable) {
@@ -36,15 +48,10 @@ class TodoTile extends StatelessWidget {
             border: Border.all(width: 1, color: Colors.white),
             borderRadius: BorderRadius.circular(10)),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text(
-                task.name,
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.titleLarge!.fontSize,
-                ),
+            Expanded(
+              child: _buildTaskTitle(
+                fontSize: titleFontSize,
               ),
             ),
             Container(

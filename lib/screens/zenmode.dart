@@ -43,6 +43,7 @@ class _ZenModeState extends State<ZenMode> {
         child: Column(
           children: [
             zenModeTitle,
+            contentVerticalMargin,
             ZenModeCard(task: widget.task),
             contentVerticalMargin,
             SubTaskTodoTile(task: widget.task),
