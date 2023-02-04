@@ -15,19 +15,23 @@ void main() {
   );
 }
 
+ThemeData appThemeData() {
+  final defaultColorScheme = ThemeData.dark().colorScheme;
+  final baseTheme = ThemeData.dark();
+  final themeData = baseTheme.copyWith(
+    textTheme: GoogleFonts.montserratTextTheme(baseTheme.textTheme),
+    colorScheme: defaultColorScheme.copyWith(
+        background: const Color(0xff304163),
+        secondary: const Color(0xff516C8D)),
+  );
+  return themeData;
+}
+
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var defaultColorScheme = ThemeData.dark().colorScheme;
-    var baseTheme = ThemeData.dark();
-    var themeData = baseTheme.copyWith(
-      textTheme: GoogleFonts.montserratTextTheme(baseTheme.textTheme),
-      colorScheme: defaultColorScheme.copyWith(
-          background: const Color(0xff304163),
-          secondary: const Color(0xff516C8D)),
-    );
-    return MaterialApp(theme: themeData, home: MainPage());
+    return MaterialApp(theme: appThemeData(), home: TaskListPage());
   }
 }

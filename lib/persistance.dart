@@ -22,20 +22,28 @@ class AppDatabase {
       'FOREIGN KEY (ancestorTaskId) REFERENCES $tableName(id))';
   static const databaseVersion = 2;
 
-  Future<Database> getDb() async {
+  static void setDb(Database database) {
+    AppDatabase._database = database;
+  }
+
+  Future<Database> getDb({String dbFileName = AppDatabase.dbFileName}) async {
     if (AppDatabase._database != null) {
       return AppDatabase._database!;
     }
 
-    _database = await _initDb();
+    _database = await _initDb(dbFileName);
     return _database!;
   }
 
-  Future<Database> _initDb() async {
+  Future<Database> _initDb(String dbFileName) async {
     return openDatabase(join(await getDatabasesPath(), dbFileName),
         onCreate: _onCreate,
         onConfigure: _onConfigure,
         version: databaseVersion);
+  }
+
+  static Future<void> deleteAppDatabase(String dbFileName) async {
+    await deleteDatabase(join(await getDatabasesPath(), dbFileName));
   }
 
   void _onCreate(db, version) => db.execute(AppDatabase.createTableQuery);

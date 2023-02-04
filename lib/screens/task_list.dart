@@ -9,12 +9,18 @@ import '../state/task_state.dart';
 import 'dart:developer' as dev;
 import 'package:rive/rive.dart';
 
-class MainPage extends StatelessWidget {
-  MainPage({
+class TaskListPage extends StatelessWidget {
+  TaskListPage({
     super.key,
   });
 
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+
+  void _onTaskCompleted(int index, Task task, Animation animation) {
+    dev.log('Task with id ${task.id} complete callback');
+    _listKey.currentState!.removeItem(
+        index, (context, animation) => _buildItem(index, task, animation));
+  }
 
   Widget _buildItem(int index, Task task, Animation animation) {
     dev.log('$task is being built');
@@ -40,11 +46,7 @@ class MainPage extends StatelessWidget {
         ),
         child: TodoTile(
           task,
-          onCompleted: () {
-            dev.log('Task with id ${task.id} complete callback');
-            _listKey.currentState!.removeItem(index,
-                (context, animation) => _buildItem(index, task, animation));
-          },
+          onCompleted: () => _onTaskCompleted(index, task, animation),
         ),
       ),
     );
@@ -54,6 +56,44 @@ class MainPage extends StatelessWidget {
     return tasks
         .where((task) => !task.completed && task.ancestorTaskId == null)
         .toList();
+  }
+
+  final _emptyTaskList = Center(
+      key: const Key('emptyTaskListWidget'),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        // ignore: prefer_const_literals_to_create_immutables
+        children: [
+          const SizedBox(
+            width: 200,
+            height: 200,
+            child: RiveAnimation.asset('assets/animations/happy-chic.riv'),
+          ),
+          const Text('Congrats! Everything is done'),
+        ],
+      ));
+
+  Widget _taskList(List<Task> tasks) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 100,
+        ),
+        Expanded(
+          child: AnimatedList(
+            key: _listKey,
+            initialItemCount: tasks.length,
+            itemBuilder: ((context, index, animation) =>
+                _buildItem(index, tasks[index], animation)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _onFloatingActionButtonPressed(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const NewTask()));
   }
 
   @override
@@ -74,41 +114,12 @@ class MainPage extends StatelessWidget {
             dev.log(
                 'Total of ${tasks.length} task(s) is to be loaded in the task list');
             if (tasks.isEmpty) {
-              return Center(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  const SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: RiveAnimation.asset(
-                          'assets/animations/happy-chic.riv')),
-                  const Text('Congrats! Everything is done'),
-                ],
-              ));
+              return _emptyTaskList;
             }
-            return Column(
-              children: [
-                const SizedBox(
-                  height: 100,
-                ),
-                Expanded(
-                  child: AnimatedList(
-                    key: _listKey,
-                    initialItemCount: tasks.length,
-                    itemBuilder: ((context, index, animation) =>
-                        _buildItem(index, tasks[index], animation)),
-                  ),
-                ),
-              ],
-            );
+            return _taskList(tasks);
           }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const NewTask()));
-        },
+        onPressed: () => _onFloatingActionButtonPressed(context),
         child: const IconTheme(
           data: IconThemeData(color: Colors.white),
           child: Icon(Icons.add),
