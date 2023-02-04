@@ -24,13 +24,28 @@ class MainPage extends StatelessWidget {
     );
     return SlideTransition(
       position: animation.drive(myTween),
-      child: TodoTile(
-        task,
-        onCompleted: () {
-          dev.log('Task with id ${task.id} complete callback');
-          _listKey.currentState!.removeItem(index,
-              (context, animation) => _buildItem(index, task, animation));
+      child: Dismissible(
+        onDismissed: (dismisDirection) {
+          dev.log('tile was dismissed');
         },
+        key: GlobalKey(),
+        background: Container(
+          color: Colors.red,
+          child: const Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: EdgeInsets.only(right: 20),
+                child: Icon(Icons.delete),
+              )),
+        ),
+        child: TodoTile(
+          task,
+          onCompleted: () {
+            dev.log('Task with id ${task.id} complete callback');
+            _listKey.currentState!.removeItem(index,
+                (context, animation) => _buildItem(index, task, animation));
+          },
+        ),
       ),
     );
   }
