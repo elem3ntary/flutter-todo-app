@@ -27,9 +27,11 @@ void main() {
   final taskState = TaskState();
   late AppDatabase db;
 
-  setUp(() async => {
+  setUp(() async {
     db = await getTestDatabase();
   });
+
+  tearDown(() => db.deleteAppDatabase());
 
   testWidgets('Newly added tasks are diplayed in the task list',
       (tester) async {

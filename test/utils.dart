@@ -4,12 +4,8 @@ import 'package:todo_app/persistance.dart';
 
 const dbFileName = 'test.db';
 
-Future<Database> getTestDatabase() async {
+Future<AppDatabase> getTestDatabase() async {
   sqfliteFfiInit();
   databaseFactory = databaseFactoryFfi;
-  return AppDatabase().getDb(dbFileName: dbFileName);
-}
-
-Future<void> deleteMockDb() async {
-  await AppDatabase.deleteAppDatabase(dbFileName);
+  return AppDatabase.create(dbName: dbFileName);
 }
