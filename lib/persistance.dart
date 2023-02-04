@@ -7,10 +7,9 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo_app/models/task.dart';
 
+const dbFileName = 'TODO_APP.db';
+
 class AppDatabase {
-  static Database? _database;
-  static const dbFileName = 'TODO_APP.db';
-  static const tableName = 'tasks';
   static const createTableQuery = 'CREATE TABLE $tableName('
       'id INTEGER PRIMARY KEY,'
       'name TEXT,'
@@ -20,59 +19,55 @@ class AppDatabase {
       'ancestorTaskId INTEGER,'
       'feeling TEXT,'
       'FOREIGN KEY (ancestorTaskId) REFERENCES $tableName(id))';
+  static const tableName = 'tasks';
+
   static const databaseVersion = 2;
+  static AppDatabase? _instance;
 
-  static void setDb(Database database) {
-    AppDatabase._database = database;
-  }
+  late Database _db;
+  String dbName;
 
-  Future<Database> getDb({String dbFileName = AppDatabase.dbFileName}) async {
-    if (AppDatabase._database != null) {
-      return AppDatabase._database!;
-    }
+  AppDatabase(this.dbName);
 
-    _database = await _initDb(dbFileName);
-    return _database!;
+  static Future<AppDatabase> create({String dbName = dbFileName}) async {
+    _instance ??= AppDatabase(dbName);
+    _instance!._db = await _instance!._initDb(dbName);
+    return _instance!;
   }
 
   Future<Database> _initDb(String dbFileName) async {
-    return openDatabase(join(await getDatabasesPath(), dbFileName),
+    return openDatabase(join(await getDatabasesPath(), dbName),
         onCreate: _onCreate,
         onConfigure: _onConfigure,
         version: databaseVersion);
   }
 
-  static Future<void> deleteAppDatabase(String dbFileName) async {
-    await deleteDatabase(join(await getDatabasesPath(), dbFileName));
+  Future<void> deleteAppDatabase() async {
+    await deleteDatabase(join(await getDatabasesPath(), dbName));
   }
 
-  void _onCreate(db, version) => db.execute(AppDatabase.createTableQuery);
+  void _onCreate(db, version) => db.execute(createTableQuery);
   void _onConfigure(Database db) => db.execute('PRAGMA foreign_keys = ON;');
 
   Future<int> insertTask(Task task) async {
-    final db = await getDb();
-    final id = await db.insert(tableName, task.toMap());
+    final id = await _db.insert(tableName, task.toMap());
     task.id = id;
     return id;
   }
 
   Future<void> updateTask(Task task) async {
-    final db = await getDb();
     dev.log('Updating task with id ${task.id}');
-    db.update(AppDatabase.tableName, task.toMap(),
-        where: 'id=?', whereArgs: [task.id!]);
+    _db.update(tableName, task.toMap(), where: 'id=?', whereArgs: [task.id!]);
   }
 
   Future<List<Task>> fetchSutasks(Task task) async {
-    final db = await getDb();
-    final List<Map<String, dynamic>> tasks = await db
+    final List<Map<String, dynamic>> tasks = await _db
         .query(tableName, where: 'ancestorTaskId=?', whereArgs: [task.id]);
     return databaseResultToTaskList(tasks);
   }
 
   Future<List<Task>> tasks() async {
-    final db = await getDb();
-    final List<Map<String, dynamic>> tasks = await db.query(tableName);
+    final List<Map<String, dynamic>> tasks = await _db.query(tableName);
     dev.log('Fetched ${tasks.length} task(s) from the DB');
     return databaseResultToTaskList(tasks);
   }
