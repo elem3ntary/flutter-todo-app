@@ -29,13 +29,21 @@ class AppDatabase {
 
   AppDatabase(this.dbName);
 
-  static Future<AppDatabase> create({String dbName = dbFileName}) async {
-    _instance ??= AppDatabase(dbName);
-    _instance!._db = await _instance!._initDb(dbName);
+  static Future<AppDatabase> create(
+      {String dbName = dbFileName,
+      Future<Database> Function()? dbGenerator}) async {
+    if (_instance == null) {
+      _instance = AppDatabase(dbName);
+      dbGenerator ??= _instance!._initDb;
+      _instance!._db = await dbGenerator();
+    }
+
     return _instance!;
   }
 
-  Future<Database> _initDb(String dbFileName) async {
+  Future<void> initCustomDb(Function(Database) openDb) async {}
+
+  Future<Database> _initDb() async {
     return openDatabase(join(await getDatabasesPath(), dbName),
         onCreate: _onCreate,
         onConfigure: _onConfigure,

@@ -35,9 +35,12 @@ void main() {
 
   testWidgets('Newly added tasks are diplayed in the task list',
       (tester) async {
+    var taskList = await db.tasks();
+    print(taskList);
     await tester.pumpWidget(createTaskListPage(taskState));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
+    await tester.pump(const Duration(seconds: 4));
     await tester.pump(const Duration(seconds: 4));
     // int frames = await tester.pumpAndSettle();
     // dev.log('Frames pumped: $frames');
@@ -45,8 +48,11 @@ void main() {
     expect(find.byKey(emptyTaskListWidget), findsOneWidget);
 
     const testTaskName = 'test task';
-    taskState.addTask(Task(testTaskName));
+    await taskState.addTask(Task(testTaskName));
+    taskList = await db.tasks();
+    print(taskList);
     await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle(const Duration(seconds: 1));
     expect(find.text(testTaskName), findsOneWidget);
   });
 }

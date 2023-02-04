@@ -7,26 +7,29 @@ class TaskState extends ChangeNotifier {
   List<Task>? tasks;
   AppDatabase? database;
 
-  Future<void> init() async {
+  Future<void> initIfNeeded() async {
     database ??= await AppDatabase.create();
   }
 
   Future<int> addTask(Task task) async {
+    await initIfNeeded();
     tasks!.add(task);
     int taskId = await database!.insertTask(task);
     notifyListeners();
     return taskId;
   }
 
-  void addFeeling(String feeling, Task task) {
+  Future<void> addFeeling(String feeling, Task task) async {
+    await initIfNeeded();
     task.addFeeling(feeling);
-    database!.updateTask(task);
+    await database!.updateTask(task);
     notifyListeners();
   }
 
-  void markTaskAsCompleted(Task task) {
+  Future<void> markTaskAsCompleted(Task task) async {
+    await initIfNeeded();
     task.completed = true;
-    database!.updateTask(task);
+    await database!.updateTask(task);
 
     notifyListeners();
     // causes task list widget to rebuild thus AnimationList is replaced by
@@ -40,12 +43,14 @@ class TaskState extends ChangeNotifier {
   }
 
   Future<List<Task>> getTasks() async {
+    await initIfNeeded();
     // ignore: prefer_conditional_assignment
     tasks ??= await database!.tasks();
     return tasks!;
   }
 
   Future<void> fetchSubtasks(Task task) async {
+    await initIfNeeded();
     task.subtasks = await database!.fetchSutasks(task);
   }
 }
