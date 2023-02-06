@@ -119,6 +119,7 @@ class TaskListPage extends StatelessWidget {
             return _taskList(tasks);
           }),
       floatingActionButton: FloatingActionButton(
+        key: const Key('addTask'),
         onPressed: () => _onFloatingActionButtonPressed(context),
         child: const IconTheme(
           data: IconThemeData(color: Colors.white),

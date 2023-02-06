@@ -29,7 +29,7 @@ class Task {
   }
 
   int getFeelingCount() {
-    return 1;
+    return (feeling.trim() == '') ? 0 : 1;
   }
 
   void addFeeling(String feeling) {

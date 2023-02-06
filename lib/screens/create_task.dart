@@ -5,6 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/state/task_state.dart';
 
+const taskNameFieldKey = Key('taskNameField');
+const taskSubmitButtonKey = Key('taskSubmitButton');
+
 class NewTask extends StatefulWidget {
   const NewTask({super.key});
 
@@ -97,7 +100,10 @@ class _NewTaskState extends State<NewTask> {
             mainAxisSize: MainAxisSize.min,
             // ignore: prefer_const_literals_to_create_immutables
             children: [
-              const Text('Add new task'),
+              const Text(
+                'Add new task',
+                key: Key('addTaskText'),
+              ),
               const SizedBox(
                 width: 10,
               ),
@@ -111,6 +117,7 @@ class _NewTaskState extends State<NewTask> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
+                key: taskNameFieldKey,
                 autofocus: true,
                 focusNode: _nameFocusNode,
                 controller: _controller,
@@ -131,6 +138,7 @@ class _NewTaskState extends State<NewTask> {
         ),
       ),
       floatingActionButton: FloatingActionButton.large(
+        key: taskSubmitButtonKey,
         onPressed: () {
           _checkIfNameIsValid();
           setState(() {
@@ -154,6 +162,7 @@ class _NewTaskState extends State<NewTask> {
     return SlideTransition(
       position: animation.drive(tween),
       child: RemovableTextField(
+        key: Key('subtaskTextField_$index'),
         textEditingController: controller ?? TextEditingController(),
         onInsertionModeChange: _onInsertionModeChange,
         onItemDeletePressed: () => _onItemDeletePressed(index),
