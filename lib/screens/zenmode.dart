@@ -10,7 +10,6 @@ import 'package:todo_app/common_widgets/todo_tile.dart';
 import 'package:todo_app/common_widgets/zenmode_card.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/screens/feeling.dart';
-import 'package:todo_app/state/task_state.dart';
 
 class ZenMode extends StatefulWidget {
   final Task task;

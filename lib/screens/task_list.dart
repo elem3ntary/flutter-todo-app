@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/common_widgets/todo_tile.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/screens/create_task.dart';
-import '../state/task_state.dart';
 import 'dart:developer' as dev;
 import 'package:rive/rive.dart';
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common_widgets/feeling_card.dart';
 import 'package:todo_app/models/task.dart';
-import 'package:todo_app/state/task_state.dart';
 
 class FeelingInput extends StatefulWidget {
   const FeelingInput({

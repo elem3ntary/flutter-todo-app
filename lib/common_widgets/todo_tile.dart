@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/screens/zenmode.dart';
 
 import '../models/task.dart';
-import '../state/task_state.dart';
 
 class TodoTile extends StatelessWidget {
   const TodoTile(

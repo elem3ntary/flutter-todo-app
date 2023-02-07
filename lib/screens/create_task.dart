@@ -3,7 +3,6 @@ import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/task.dart';
-import 'package:todo_app/state/task_state.dart';
 
 const taskNameFieldKey = Key('taskNameField');
 const taskSubmitButtonKey = Key('taskSubmitButton');

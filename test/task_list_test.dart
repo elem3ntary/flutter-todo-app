@@ -1,17 +1,12 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common_widgets/todo_tile.dart';
-import 'package:todo_app/main.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/persistance.dart';
-import 'package:todo_app/screens/task_list.dart';
-import 'package:todo_app/state/task_state.dart';
-import 'dart:developer' as dev;
 import 'package:todo_app/screens/create_task.dart';
+import 'package:todo_app/screens/task_list.dart';
 
 import 'utils.dart';
 

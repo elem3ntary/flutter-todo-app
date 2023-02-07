@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/models/task.dart';
 import 'package:todo_app/screens/task_list.dart';
-
-import 'state/task_state.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
