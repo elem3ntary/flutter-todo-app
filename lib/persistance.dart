@@ -29,6 +29,8 @@ class AppDatabase {
 
   AppDatabase(this.dbName);
 
+  Database get database => _db;
+
   static Future<AppDatabase> create(
       {String dbName = dbFileName,
       Future<Database> Function()? dbGenerator}) async {
@@ -80,7 +82,12 @@ class AppDatabase {
     return databaseResultToTaskList(tasks);
   }
 
-  List<Task> databaseResultToTaskList(List<Map<String, dynamic>> tasks) {
+  static List<Task> databaseResultToTaskList(List<Map<String, dynamic>> tasks) {
     return List.generate(tasks.length, (index) => Task.fromMap(tasks[index]));
+  }
+
+  Future<void> close() async {
+    await database.close();
+    _instance = null;
   }
 }

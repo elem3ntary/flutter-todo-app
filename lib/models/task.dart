@@ -75,7 +75,7 @@ class Task {
 }
 
 class TaskState extends ChangeNotifier {
-  List<Task>? tasks;
+  var tasks = <Task>[];
   AppDatabase? database;
 
   Future<void> initIfNeeded() async {
@@ -84,7 +84,7 @@ class TaskState extends ChangeNotifier {
 
   Future<int> addTask(Task task) async {
     await initIfNeeded();
-    tasks!.add(task);
+    tasks.add(task);
     int taskId = await database!.insertTask(task);
     notifyListeners();
     return taskId;
@@ -105,7 +105,7 @@ class TaskState extends ChangeNotifier {
     notifyListeners();
     // causes task list widget to rebuild thus AnimationList is replaced by
     // widget that notifies that all tasks are completed
-    if (tasks!
+    if (tasks
         .where((el) => !el.completed && el.ancestorTaskId == null)
         .toList()
         .isEmpty) {
@@ -117,7 +117,7 @@ class TaskState extends ChangeNotifier {
     await initIfNeeded();
     // ignore: prefer_conditional_assignment
     tasks ??= await database!.tasks();
-    return tasks!;
+    return tasks;
   }
 
   Future<void> fetchSubtasks(Task task) async {
