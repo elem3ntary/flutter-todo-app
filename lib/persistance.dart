@@ -76,6 +76,12 @@ class AppDatabase {
     return databaseResultToTaskList(tasks);
   }
 
+  Future<void> deleteTask(Task task) async {
+    await _db
+        .delete(tableName, where: 'ancestorTaskId=?', whereArgs: [task.id]);
+    await _db.delete(tableName, where: 'id=?', whereArgs: [task.id]);
+  }
+
   Future<List<Task>> tasks() async {
     final List<Map<String, dynamic>> tasks = await _db.query(tableName);
     dev.log('Fetched ${tasks.length} task(s) from the DB');

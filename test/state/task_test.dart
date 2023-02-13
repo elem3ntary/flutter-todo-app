@@ -30,6 +30,14 @@ void main() {
     return dbTasks;
   }
 
+  Future<void> addSubtasks(
+      TaskState state, Task ancestorTask, List<String> subTasksNames) async {
+    int ancestorTaskId = ancestorTask.id!;
+    for (var subTask in generateSubtasks(testSubTasksNames, ancestorTaskId)) {
+      await state.addTask(subTask);
+    }
+  }
+
   test('Newly added task is persistant', () async {
     final appDatabase = await AppDatabase.create();
     final db = appDatabase.database;
@@ -56,15 +64,30 @@ void main() {
     final db = appDatabase.database;
     final state = TaskState();
 
-    int ancestorTaskId = await state.addTask(testTask);
-    for (var subTask in generateSubtasks(testSubTasksNames, ancestorTaskId)) {
-      await state.addTask(subTask);
-    }
+    await state.addTask(testTask);
+    await addSubtasks(state, testTask, testSubTasksNames);
 
     final dbTasks = await getTasksFromDB(db);
     expect(dbTasks.length, testSubTasksNames.length + 1);
     expect(
         dbTasks.where((value) => testSubTasksNames.contains(value.name)).length,
         testSubTasksNames.length);
+  });
+
+  test('User can delete task and all its subtasks', () async {
+    final appDatabase = await AppDatabase.create();
+    final db = appDatabase.database;
+    final state = TaskState();
+
+    await state.addTask(testTask);
+    await addSubtasks(state, testTask, testSubTasksNames);
+
+    var dbTasks = await getTasksFromDB(db);
+    expect(dbTasks.length, testSubTasksNames.length + 1);
+    expect(dbTasks.first.name, testTask.name);
+
+    await state.deteleTask(testTask);
+    dbTasks = await getTasksFromDB(db);
+    expect(dbTasks.length, 0);
   });
 }

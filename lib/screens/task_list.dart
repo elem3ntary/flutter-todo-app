@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common_widgets/todo_tile.dart';
 import 'package:todo_app/models/task.dart';
@@ -18,10 +19,13 @@ class TaskListPage extends StatelessWidget {
   void _onTaskCompleted(int index, Task task, Animation animation) {
     dev.log('Task with id ${task.id} complete callback');
     _listKey.currentState!.removeItem(
-        index, (context, animation) => _buildItem(index, task, animation));
+        index,
+        (context, animation) =>
+            _buildItem(context.watch<TaskState>(), index, task, animation));
   }
 
-  Widget _buildItem(int index, Task task, Animation animation) {
+  Widget _buildItem(
+      TaskState state, int index, Task task, Animation animation) {
     dev.log('$task is being built');
     final myTween = Tween<Offset>(
       begin: const Offset(1.0, 0.0),
@@ -32,6 +36,7 @@ class TaskListPage extends StatelessWidget {
       child: Dismissible(
         onDismissed: (dismisDirection) {
           dev.log('tile was dismissed');
+          state.deteleTask(task);
         },
         key: GlobalKey(),
         background: Container(
@@ -82,8 +87,8 @@ class TaskListPage extends StatelessWidget {
           child: AnimatedList(
             key: _listKey,
             initialItemCount: tasks.length,
-            itemBuilder: ((context, index, animation) =>
-                _buildItem(index, tasks[index], animation)),
+            itemBuilder: ((context, index, animation) => _buildItem(
+                context.watch<TaskState>(), index, tasks[index], animation)),
           ),
         ),
       ],

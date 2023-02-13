@@ -86,6 +86,7 @@ class TaskState extends ChangeNotifier {
     await initIfNeeded();
     tasks.add(task);
     int taskId = await database!.insertTask(task);
+    task.id = taskId;
     notifyListeners();
     return taskId;
   }
@@ -118,6 +119,13 @@ class TaskState extends ChangeNotifier {
     // ignore: prefer_conditional_assignment
     tasks ??= await database!.tasks();
     return tasks;
+  }
+
+  Future<void> deteleTask(Task task) async {
+    await database!.deleteTask(task);
+    tasks.removeWhere((element) => element.ancestorTaskId == task.id);
+    tasks.remove(task);
+    notifyListeners();
   }
 
   Future<void> fetchSubtasks(Task task) async {
